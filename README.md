@@ -1,13 +1,13 @@
 # The "Hello World" of Select Statement-
 CREATE QUERY GetFriends(vertex<User> inputUser) FOR GRAPH Social{
-Start = {Input User};
+Start = {inputUser};
 Friends = SELECT t FROM Start:s-(IsFriend:e) - User:t;
 PRINT Friends;
 }
  
 # WHERE Clause
 CREATE QUERY GetFriends(vertex<User> inputUser) FOR GRAPH Social{
-Start = {Input User};
+Start = {inputUser};
 Friends = SELECT t FROM Start:s-(IsFriend:e) - User:t;
         WHERE e.connectDt BETWEEN to_datetime("2018-01-01") AND to_datetime("2019-01-01")
         AND t.gender == "F";
@@ -91,7 +91,7 @@ PRINT Friends;}
  @@Map +=(5->2);
  PRINT @@Heap;
  PRINT @@Map;} 
-O/P: HEAP:
+ O/P: HEAP:
         user:USER C
         value:300
         user:USER D
@@ -101,3 +101,28 @@ O/P: HEAP:
      MAP:
         1:6
         5:2
+ 
+ 
+#ACCUM Clause
+##sum single hop
+ CREATE QUERY GetFriends(vertex<User> inputUser) FOR GRAPH Social{
+ MapAccum<uint,SumAccum<uint>>@@ageMap;
+ Start = {inputUser};
+ Friends = SELECT t FROM Start:s-(IsFriend:e) - User:t;
+        WHERE e.connectDt BETWEEN to_datetime("2018-01-01") AND to_datetime("2019-01-01")
+         ACCUM @@ageMap +=(t.age/10->1);
+ PRINT @@ageMAP;}
+ O/P:2->2,3->1
+ 
+## avg double hop
+ CREATE QUERY GetFriends(vertex<User> inputUser) FOR GRAPH Social{
+ AvgAccum @avgAge;
+ Start={inputUser};
+ Hop1=SELECT t FROM Start:s-(IsFriend:e)-:t;
+ Hop2=SELECT t FROM Hop1:s-(IsFriend:e)-:t
+ ACCUM t.@avgAge +=s.age;
+ print Hop2;
+ 
+ 
+ 
+ 
