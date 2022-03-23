@@ -196,7 +196,7 @@ PRINT Friends;}
  ACCUM t.@avgAge +=s.age;
  
  print Hop2;
-#POSTACCUM
+# POSTACCUM
  CREATE QUERY GetFriends (vertex inputUser) FOR GRAPH Social {
  
  SumAccum @@Num;
@@ -225,7 +225,7 @@ PRINT Friends;}
  
  print Friends2Hop;
  }
-#HAVING
+# HAVING
  CREATE QUERY GetFriends (vertex inputUser) FOR GRAPH Social {
   
  AvgAccum @avgAge;
@@ -241,7 +241,7 @@ PRINT Friends;}
  HAVING t.@avgAge>30
  
  print Hop2}
-#ORDERBY AND LIMIT
+# ORDERBY AND LIMIT
  OUTPUT THE FIRST TWO VALUES ORDERED BY INC AVG AGE OF FRIENDS IN COMMON 
  
  CREATE QUERY GetFriends (vertex inputUser) FOR GRAPH Social {
