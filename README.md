@@ -164,8 +164,8 @@ PRINT Friends;}
      MAP:1:6,5:2
  
  
-#ACCUM Clause
-##sum single hop
+# ACCUM Clause
+## sum single hop
  CREATE QUERY GetFriends(vertex<User> inputUser) FOR GRAPH Social{
  
  MapAccum<uint,SumAccum<uint>>@@ageMap;
@@ -182,7 +182,7 @@ PRINT Friends;}
  
  O/P:2->2,3->1
  
-## avg double hop
+## Avg double hop
  CREATE QUERY GetFriends(vertex<User> inputUser) FOR GRAPH Social{
  
  AvgAccum @avgAge;
@@ -196,6 +196,68 @@ PRINT Friends;}
  ACCUM t.@avgAge +=s.age;
  
  print Hop2;
+#POSTACCUM
+ CREATE QUERY GetFriends (vertex inputUser) FOR GRAPH Social {
  
+ SumAccum @@Num;
  
+ SumAccum @@normCNum;
  
+ MaxAccum @@maxCNum ;
+ 
+ Start {inputUser} ;
+ 
+ Friends1Hop = SELECT t FROM Start : s- (IsFriend:e) - :t ;
+ 
+ Friends2Hop = SELECT t
+ 
+ FROM Friends1Hop:s- (IsFriend:e) - :t
+ 
+ ACCUM t.@cNum += 1
+ 
+ POST-ACCUM @@maxCNum += t.@cNum;
+ 
+ Friends2Hop = select s FROM Friends2Hop: s
+ 
+ POST-ACCUM
+ 
+ s.@normCNum = s.@cNum/@@maxCNum;
+ 
+ print Friends2Hop;
+ }
+#HAVING
+ CREATE QUERY GetFriends (vertex inputUser) FOR GRAPH Social {
+  
+ AvgAccum @avgAge;
+ 
+ Start={inputUser};
+ 
+ Hop1=SELECT t FROM Start:s-(IsFriend:e)-:t;
+ 
+ Hop2=SELECT t FROM Hop1:s-(IsFriend:e)-:t
+ 
+ ACCUM t.@avgAge += s.age
+ 
+ HAVING t.@avgAge>30
+ 
+ print Hop2}
+#ORDERBY AND LIMIT
+ OUTPUT THE FIRST TWO VALUES ORDERED BY INC AVG AGE OF FRIENDS IN COMMON 
+ 
+ CREATE QUERY GetFriends (vertex inputUser) FOR GRAPH Social {
+  
+ AvgAccum @avgAge;
+ 
+ Start={inputUser};
+ 
+ Hop1=SELECT t FROM Start:s-(IsFriend:e)-:t;
+ 
+ Hop2=SELECT t FROM Hop1:s-(IsFriend:e)-:t
+ 
+ ACCUM t.@avgAge += s.age
+ 
+ ORDER BY t.@avgAge ASC
+ 
+ LIMIT 2;
+ 
+ print Hop2;} 
