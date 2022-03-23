@@ -1,5 +1,6 @@
 # The "Hello World" of Select Statement-
 CREATE QUERY GetFriends(vertex<User> inputUser) FOR GRAPH Social{
+ 
 Start = {inputUser};
 Friends = SELECT t FROM Start:s-(IsFriend:e) - User:t;
 PRINT Friends;
