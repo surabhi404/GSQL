@@ -1,1 +1,1 @@
-# Graph-Fundamentals
+# GSQL
